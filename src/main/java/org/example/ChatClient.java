@@ -28,27 +28,36 @@ public class ChatClient {
                 return;
             }
 
-            if (args.length > 0) {
-                String request = String.join(" ", args);
-                System.out.println("Bruger besked fra argumenter: " + request);
-                sendAndPrintResponse(writer, reader, request);
-                return;
+            while (!login(reader, writer, scanner)) {
+                System.out.println("Login mislykkedes. Prøv igen.");
             }
 
+            Thread receiverThread = createReceiverThread(reader);
+            receiverThread.start();
+
             while (true) {
-                System.out.print("Skriv en besked (eller QUIT for at afslutte): ");
+                System.out.print("Skriv target (eller QUIT for at afslutte): ");
                 if (!scanner.hasNextLine()) {
                     System.out.println("Input lukket. Afslutter klienten.");
                     break;
                 }
 
-                String request = scanner.nextLine();
-                if ("QUIT".equalsIgnoreCase(request.trim())) {
+                String target = scanner.nextLine().trim();
+                if ("QUIT".equalsIgnoreCase(target)) {
                     System.out.println("Klienten afslutter forbindelsen.");
                     break;
                 }
 
-                sendAndPrintResponse(writer, reader, request);
+                System.out.print("Skriv besked: ");
+                if (!scanner.hasNextLine()) {
+                    System.out.println("Input lukket. Afslutter klienten.");
+                    break;
+                }
+
+                String payload = scanner.nextLine();
+                writer.println("TEXT|" + target + "|" + payload);
+                writer.flush();
+                System.out.println("Sendt: TEXT|" + target + "|" + payload);
             }
         } catch (ConnectException exception) {
             System.err.println("Kunne ikke forbinde. Er TcpServer startet på port " + PORT + "?");
@@ -57,8 +66,21 @@ public class ChatClient {
         }
     }
 
-    private static void sendAndPrintResponse(PrintWriter writer, BufferedReader reader, String request) throws IOException {
+    private static boolean login(BufferedReader reader, PrintWriter writer, Scanner scanner) throws IOException {
+        System.out.print("Login med brugernavn: ");
+        if (!scanner.hasNextLine()) {
+            System.out.println("Input lukket. Afslutter klienten.");
+            return false;
+        }
+
+        String username = scanner.nextLine().trim();
+        String response = sendAndReadResponse(writer, reader, "LOGIN|" + username + "|");
+        return response.contains("|LOGIN|");
+    }
+
+    private static String sendAndReadResponse(PrintWriter writer, BufferedReader reader, String request) throws IOException {
         writer.println(request);
+        writer.flush();
         System.out.println("Sendt: " + request);
 
         String response = reader.readLine();
@@ -67,5 +89,24 @@ public class ChatClient {
         }
 
         System.out.println("Svar: " + response);
+        return response;
+    }
+
+    private static Thread createReceiverThread(BufferedReader reader) {
+        Thread receiverThread = new Thread(() -> {
+            try {
+                String response;
+                while ((response = reader.readLine()) != null) {
+                    System.out.println();
+                    System.out.println("Modtaget: " + response);
+                }
+            } catch (IOException ex) {
+                System.out.println("Forbindelsen til serveren blev lukket: " + ex.getMessage());
+            }
+        });
+
+        receiverThread.setDaemon(true);
+        receiverThread.setName("chat-client-receiver");
+        return receiverThread;
     }
 }
