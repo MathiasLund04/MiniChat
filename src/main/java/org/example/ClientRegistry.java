@@ -1,11 +1,14 @@
 package org.example;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientRegistry {
     private static final Set<String> ALLOWED_USERNAMES = Set.of("alice", "bob", "charlie");
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
 
     private final Map<String, ClientHandler> clientsByUsername = new ConcurrentHashMap<>();
 
@@ -34,6 +37,10 @@ public class ClientRegistry {
     }
 
     private String formatOutgoingMessage(String sender, String target, String payload) {
-        return System.currentTimeMillis() + "|TEXT|" + sender + "|" + target + "|" + payload;
+        return formatTimestamp() + "|TEXT|" + sender + "|" + target + "|" + payload;
+    }
+
+    public String formatTimestamp() {
+        return LocalDateTime.now().format(TIMESTAMP_FORMATTER);
     }
 }

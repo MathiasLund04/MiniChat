@@ -14,7 +14,6 @@ public class ClientHandler implements Runnable {
     private final BufferedReader reader;
     private final PrintWriter writer;
     private final MessageParser messageParser = new MessageParser();
-
     private String username;
 
     public ClientHandler(Socket socket) throws IOException {
@@ -41,7 +40,7 @@ public class ClientHandler implements Runnable {
         } catch (IOException ex) {
             System.out.println("Fejl i ClientHandler: " + ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            sendMessage("0|ERROR|SERVER||" + ex.getMessage());
+            sendErrorMessage("", ex.getMessage());
         } finally {
             close();
         }
@@ -79,26 +78,30 @@ public class ClientHandler implements Runnable {
         }
 
         if (!CLIENT_REGISTRY.isAllowedUsername(requestedUsername)) {
-            sendMessage("0|ERROR|SERVER|" + requestedUsername + "|Brugernavn er ikke tilladt");
+            sendErrorMessage(requestedUsername, "Brugernavn er ikke tilladt");
             return;
         }
 
         if (!CLIENT_REGISTRY.register(requestedUsername, this)) {
-            sendMessage("0|ERROR|SERVER|" + requestedUsername + "|Brugernavn er allerede i brug");
+            sendErrorMessage(requestedUsername, "Brugernavn er allerede i brug");
             return;
         }
 
         username = requestedUsername;
-        sendMessage(System.currentTimeMillis() + "|LOGIN|SERVER|" + username + "|Login godkendt");
+        sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|LOGIN|SERVER|" + username + "|Login godkendt");
     }
 
     private void handleText(Message message) {
         if (username == null) {
-            sendMessage("0|ERROR|SERVER|" + message.getTarget() + "|Du skal logge ind først");
+            sendErrorMessage(message.getTarget(), "Du skal logge ind først");
             return;
         }
 
         CLIENT_REGISTRY.broadcastText(username, message.getTarget(), message.getPayload());
+    }
+
+    private void sendErrorMessage(String target, String payload) {
+        sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|ERROR|SERVER|" + target + "|" + payload);
     }
 
     public void close() {
