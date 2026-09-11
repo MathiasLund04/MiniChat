@@ -6,15 +6,18 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class ClientHandler implements Runnable {
     private static final ClientRegistry CLIENT_REGISTRY = new ClientRegistry();
+    private static final ChatRoomManager CHAT_ROOM_MANAGER = new ChatRoomManager();
 
     private final Socket socket;
     private final BufferedReader reader;
     private final PrintWriter writer;
     private final MessageParser messageParser = new MessageParser();
     private String username;
+    private String currentRoom = "general";
 
     public ClientHandler(Socket socket) throws IOException {
         this.socket = socket;
@@ -32,7 +35,7 @@ public class ClientHandler implements Runnable {
         try {
             String rawMessage;
             while ((rawMessage = reader.readLine()) != null) {
-                if (username == null){
+                if (username == null) {
                     System.out.println("Modtaget fra klient: " + rawMessage);
                 } else {
                     System.out.println("Modtaget fra " + username + ": " + rawMessage);
@@ -67,8 +70,14 @@ public class ClientHandler implements Runnable {
             case "LOGIN":
                 handleLogin(message);
                 break;
+            case "JOIN_ROOM":
+                handleJoinRoom(message);
+                break;
             case "TEXT":
                 handleText(message);
+                break;
+            case "PRIVATE":
+                handlePrivate(message);
                 break;
             default:
                 throw new IllegalArgumentException("Ukendt beskedtype: " + message.getType());
@@ -92,7 +101,25 @@ public class ClientHandler implements Runnable {
         }
 
         username = requestedUsername;
+        CHAT_ROOM_MANAGER.joinRoom(username, currentRoom);
         sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|LOGIN|SERVER|" + username + "|Login godkendt");
+    }
+
+    private void handleJoinRoom(Message message) {
+        if (username == null) {
+            sendErrorMessage("", "Du skal logge ind først");
+            return;
+        }
+
+        String roomName = message.getTarget();
+        if (roomName == null || roomName.isBlank()) {
+            sendErrorMessage(username, "Rum mangler");
+            return;
+        }
+
+        CHAT_ROOM_MANAGER.joinRoom(username, roomName);
+        currentRoom = roomName;
+        sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|JOIN_ROOM|SERVER|" + roomName + "|Du er nu i rummet");
     }
 
     private void handleText(Message message) {
@@ -101,7 +128,44 @@ public class ClientHandler implements Runnable {
             return;
         }
 
-        CLIENT_REGISTRY.broadcastText(username, message.getTarget(), message.getPayload());
+        String roomName = message.getTarget();
+        if (roomName == null || roomName.isBlank()) {
+            sendErrorMessage(username, "Rum mangler");
+            return;
+        }
+
+        if (!CHAT_ROOM_MANAGER.isMember(username, roomName)) {
+            sendErrorMessage(roomName, "Du er ikke medlem af dette rum");
+            return;
+        }
+
+        String formattedMessage = CLIENT_REGISTRY.formatTimestamp() + "|TEXT|" + username + "|" + roomName + "|" + message.getPayload();
+        Set<String> members = CHAT_ROOM_MANAGER.getMembers(roomName);
+        for (String member : members) {
+            ClientHandler client = CLIENT_REGISTRY.getClient(member);
+            if (client != null && client != this) {
+                client.sendMessage(formattedMessage);
+            }
+        }
+        sendMessage(formattedMessage);
+    }
+
+    private void handlePrivate(Message message) {
+        if (username == null) {
+            sendErrorMessage(message.getTarget(), "Du skal logge ind først");
+            return;
+        }
+
+        String recipientName = message.getTarget();
+        ClientHandler recipient = CLIENT_REGISTRY.getClient(recipientName);
+        if (recipient == null) {
+            sendErrorMessage(recipientName, "Modtageren findes ikke");
+            return;
+        }
+
+        String privateMessage = CLIENT_REGISTRY.formatTimestamp() + "|PRIVATE|" + username + "|" + recipientName + "|" + message.getPayload();
+        sendMessage(privateMessage);
+        recipient.sendMessage(privateMessage);
     }
 
     private void sendErrorMessage(String target, String payload) {
@@ -109,7 +173,10 @@ public class ClientHandler implements Runnable {
     }
 
     public void close() {
-        CLIENT_REGISTRY.unregister(username, this);
+        if (username != null) {
+            CHAT_ROOM_MANAGER.leaveRoom(username);
+            CLIENT_REGISTRY.unregister(username, this);
+        }
 
         try {
             if (writer != null) {
