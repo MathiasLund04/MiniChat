@@ -59,4 +59,12 @@ public class ChatRoomManager {
 
         return rooms.getOrDefault(roomName, Collections.emptySet());
     }
+
+    public ConcurrentHashMap<String, Set<String>> getRooms() {
+        if (rooms == null){
+            return new ConcurrentHashMap<>();
+        }
+        return new ConcurrentHashMap<>(rooms);
+    }
+
 }

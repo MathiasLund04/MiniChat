@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler implements Runnable {
     private static final ClientRegistry CLIENT_REGISTRY = new ClientRegistry();
@@ -109,6 +110,19 @@ public class ClientHandler implements Runnable {
         if (username == null) {
             sendErrorMessage("", "Du skal logge ind først");
             return;
+        }
+
+        ConcurrentHashMap<String, Set<String>> rooms = CHAT_ROOM_MANAGER.getRooms();
+        System.out.println("Tilgængelige rum: ");
+        int roomAmount = rooms.size();
+        sendMessage(String.valueOf(roomAmount));
+
+        if (rooms.isEmpty()){
+            System.out.println("Ingen rum oprettet endnu");
+        } else {
+            for (String roomName : rooms.keySet()){
+                sendMessage(roomName); //WIP!!!
+            }
         }
 
         String roomName = message.getTarget();

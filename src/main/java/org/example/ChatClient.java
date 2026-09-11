@@ -37,8 +37,8 @@ public class ChatClient {
 
             String currentRoom = "general";
             System.out.println("\nKommandoer: TEXT, JOIN_ROOM, PRIVATE, QUIT");
-            while (true) {
                 System.out.print("Vælg kommando: ");
+            while (true) {
                 if (!scanner.hasNextLine()) {
                     System.out.println("Input lukket. Afslutter klienten.");
                     break;
@@ -65,6 +65,11 @@ public class ChatClient {
                     writer.flush();
                     System.out.println("Sendt: TEXT|" + room + "|" + payload);
                 } else if ("JOIN_ROOM".equalsIgnoreCase(command)) {
+                    System.out.println("Liste over tilgængelige rum:");
+                    
+
+
+
                     System.out.print("Rum navn: ");
                     if (!scanner.hasNextLine()) break;
                     String room = scanner.nextLine().trim();
@@ -111,7 +116,7 @@ public class ChatClient {
     private static String sendAndReadResponse(PrintWriter writer, BufferedReader reader, String request) throws IOException {
         writer.println(request);
         writer.flush();
-        System.out.println("Sendt: " + request);
+        System.out.println(request);
 
         String response = reader.readLine();
         if (response == null) {
