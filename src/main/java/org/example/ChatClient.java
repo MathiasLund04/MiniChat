@@ -28,27 +28,36 @@ public class ChatClient {
                 return;
             }
 
-            if (args.length > 0) {
-                String request = String.join(" ", args);
-                System.out.println("Bruger besked fra argumenter: " + request);
-                sendAndPrintResponse(writer, reader, request);
+            System.out.print("Login med brugernavn: ");
+            if (!scanner.hasNextLine()) {
+                System.out.println("Input lukket. Afslutter klienten.");
                 return;
             }
 
+            String username = scanner.nextLine().trim();
+            sendAndPrintResponse(writer, reader, "LOGIN|" + username + "|");
+
             while (true) {
-                System.out.print("Skriv en besked (eller QUIT for at afslutte): ");
+                System.out.print("Skriv target (eller QUIT for at afslutte): ");
                 if (!scanner.hasNextLine()) {
                     System.out.println("Input lukket. Afslutter klienten.");
                     break;
                 }
 
-                String request = scanner.nextLine();
-                if ("QUIT".equalsIgnoreCase(request.trim())) {
+                String target = scanner.nextLine().trim();
+                if ("QUIT".equalsIgnoreCase(target)) {
                     System.out.println("Klienten afslutter forbindelsen.");
                     break;
                 }
 
-                sendAndPrintResponse(writer, reader, request);
+                System.out.print("Skriv besked: ");
+                if (!scanner.hasNextLine()) {
+                    System.out.println("Input lukket. Afslutter klienten.");
+                    break;
+                }
+
+                String payload = scanner.nextLine();
+                sendAndPrintResponse(writer, reader, "TEXT|" + target + "|" + payload);
             }
         } catch (ConnectException exception) {
             System.err.println("Kunne ikke forbinde. Er TcpServer startet på port " + PORT + "?");
