@@ -97,6 +97,7 @@ public class ChatClient {
             try {
                 String response;
                 while ((response = reader.readLine()) != null) {
+                    System.out.println();
                     System.out.println("Modtaget: " + response);
                 }
             } catch (IOException ex) {

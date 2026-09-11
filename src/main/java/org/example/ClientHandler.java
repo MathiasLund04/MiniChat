@@ -32,7 +32,11 @@ public class ClientHandler implements Runnable {
         try {
             String rawMessage;
             while ((rawMessage = reader.readLine()) != null) {
-                System.out.println("Modtaget fra klient: " + rawMessage);
+                if (username == null){
+                    System.out.println("Modtaget fra klient: " + rawMessage);
+                } else {
+                    System.out.println("Modtaget fra " + username + ": " + rawMessage);
+                }
                 handleMessage(messageParser.parse(rawMessage));
             }
 
