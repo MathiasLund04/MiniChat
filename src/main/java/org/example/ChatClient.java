@@ -35,8 +35,8 @@ public class ChatClient {
             Thread receiverThread = createReceiverThread(reader);
             receiverThread.start();
 
-            while (true) {
                 System.out.print("Skriv target (eller QUIT for at afslutte): ");
+            while (true) {
                 if (!scanner.hasNextLine()) {
                     System.out.println("Input lukket. Afslutter klienten.");
                     break;
@@ -99,6 +99,8 @@ public class ChatClient {
                 while ((response = reader.readLine()) != null) {
                     System.out.println();
                     System.out.println("Modtaget: " + response);
+                    System.out.print("Skriv target (eller QUIT for at afslutte): ");
+
                 }
             } catch (IOException ex) {
                 System.out.println("Forbindelsen til serveren blev lukket: " + ex.getMessage());
