@@ -36,6 +36,7 @@ public class ChatClient {
             receiverThread.start();
 
             String currentRoom = "general";
+            boolean quitRequested = false;
             System.out.println("\nKommandoer: ROOMS, TEXT, JOIN_ROOM, PRIVATE, QUIT");
                 System.out.print("Vælg kommando: ");
             while (true) {
@@ -50,7 +51,7 @@ public class ChatClient {
                     writer.println("QUIT||");
                     writer.flush();
                     System.out.println("Sendt: QUIT||");
-                    System.out.println("Klienten afslutter forbindelsen.");
+                    quitRequested = true;
                     break;
                 } else if ("ROOMS".equalsIgnoreCase(command)) {
                     writer.println("ROOMS||");
@@ -93,6 +94,14 @@ currentRoom = room;
                     System.out.println("Ukendt kommando. Prøv: ROOMS, TEXT, JOIN_ROOM, PRIVATE, QUIT");
                 }
             }
+
+            if (quitRequested) {
+                receiverThread.join();
+                System.out.println("Klienten afslutter forbindelsen.");
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            System.err.println("Klienten blev afbrudt under nedlukning.");
         } catch (ConnectException exception) {
             System.err.println("Kunne ikke forbinde. Er TcpServer startet på port " + PORT + "?");
         } catch (IOException exception) {
