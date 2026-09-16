@@ -21,7 +21,6 @@ public class SocketChatClient implements AutoCloseable {
     public String sendAndRead(String request) throws IOException {
         writer.println(request);
         writer.flush();
-
         String response = reader.readLine();
         if (response == null) {
             throw new IOException("Serveren afbrød forbindelsen uden at sende et svar.");
@@ -29,8 +28,13 @@ public class SocketChatClient implements AutoCloseable {
         return response;
     }
 
-    public BufferedReader reader() {
+    public BufferedReader getReader() {
         return reader;
+    }
+
+    public void send(String request) {
+        writer.println(request);
+        writer.flush();
     }
 
     @Override
