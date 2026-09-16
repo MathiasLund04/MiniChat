@@ -35,29 +35,60 @@ public class ChatClient {
             Thread receiverThread = createReceiverThread(reader);
             receiverThread.start();
 
-                System.out.print("Skriv target (eller QUIT for at afslutte): ");
+            String currentRoom = "general";
+            System.out.println("\nKommandoer: ROOMS, TEXT, JOIN_ROOM, PRIVATE, QUIT");
+                System.out.print("Vælg kommando: ");
             while (true) {
                 if (!scanner.hasNextLine()) {
                     System.out.println("Input lukket. Afslutter klienten.");
                     break;
                 }
 
-                String target = scanner.nextLine().trim();
-                if ("QUIT".equalsIgnoreCase(target)) {
+                String command = scanner.nextLine().trim().toUpperCase();
+                
+                if ("QUIT".equalsIgnoreCase(command)) {
                     System.out.println("Klienten afslutter forbindelsen.");
                     break;
+                } else if ("ROOMS".equalsIgnoreCase(command)) {
+                    writer.println("ROOMS||");
+                    writer.flush();
+                    System.out.println("Sendt: ROOMS||");
+                } else if ("TEXT".equalsIgnoreCase(command)) {
+                    System.out.print("Besked (nuværende Rum: " + currentRoom + "): ");
+                    if (!scanner.hasNextLine()) break;
+                    String payload = scanner.nextLine();
+                    
+                    writer.println("TEXT|" + currentRoom + "|" + payload);
+                    writer.flush();
+                    System.out.println("Sendt: TEXT|" + currentRoom + "|" + payload);
+                } else if ("JOIN_ROOM".equalsIgnoreCase(command)) {
+                    System.out.print("Rum navn: ");
+                    if (!scanner.hasNextLine()) break;
+                    String room = scanner.nextLine().trim();
+                    
+if (room.isBlank()) {
+    System.out.println("Rumnavn mangler.");
+    continue;
+}
+writer.println("JOIN_ROOM|" + room + "|");
+writer.flush();
+currentRoom = room;
+                    System.out.println("Sendt: JOIN_ROOM|" + room + "|");
+                } else if ("PRIVATE".equalsIgnoreCase(command)) {
+                    System.out.print("Modtager: ");
+                    if (!scanner.hasNextLine()) break;
+                    String recipient = scanner.nextLine().trim();
+                    
+                    System.out.print("Besked: ");
+                    if (!scanner.hasNextLine()) break;
+                    String payload = scanner.nextLine();
+                    
+                    writer.println("PRIVATE|" + recipient + "|" + payload);
+                    writer.flush();
+                    System.out.println("Sendt: PRIVATE|" + recipient + "|" + payload);
+                } else {
+                    System.out.println("Ukendt kommando. Prøv: ROOMS, TEXT, JOIN_ROOM, PRIVATE, QUIT");
                 }
-
-                System.out.print("Skriv besked: ");
-                if (!scanner.hasNextLine()) {
-                    System.out.println("Input lukket. Afslutter klienten.");
-                    break;
-                }
-
-                String payload = scanner.nextLine();
-                writer.println("TEXT|" + target + "|" + payload);
-                writer.flush();
-                System.out.println("Sendt: TEXT|" + target + "|" + payload);
             }
         } catch (ConnectException exception) {
             System.err.println("Kunne ikke forbinde. Er TcpServer startet på port " + PORT + "?");
@@ -81,7 +112,7 @@ public class ChatClient {
     private static String sendAndReadResponse(PrintWriter writer, BufferedReader reader, String request) throws IOException {
         writer.println(request);
         writer.flush();
-        System.out.println("Sendt: " + request);
+        System.out.println(request);
 
         String response = reader.readLine();
         if (response == null) {
@@ -99,8 +130,7 @@ public class ChatClient {
                 while ((response = reader.readLine()) != null) {
                     System.out.println();
                     System.out.println("Modtaget: " + response);
-                    System.out.print("Skriv target (eller QUIT for at afslutte): ");
-
+                    System.out.print("Vælg kommando: ");
                 }
             } catch (IOException ex) {
                 System.out.println("Forbindelsen til serveren blev lukket: " + ex.getMessage());

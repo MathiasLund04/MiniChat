@@ -28,6 +28,14 @@ public class ClientRegistry {
         clientsByUsername.remove(username, clientHandler);
     }
 
+    public ClientHandler getClient(String username) {
+        if (username == null || username.isBlank()) {
+            return null;
+        }
+
+        return clientsByUsername.get(username);
+    }
+
     public void broadcastText(String sender, String target, String payload) {
         String formattedMessage = formatOutgoingMessage(sender, target, payload);
 
