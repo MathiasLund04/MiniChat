@@ -47,6 +47,9 @@ public class ChatClient {
                 String command = scanner.nextLine().trim().toUpperCase();
                 
                 if ("QUIT".equalsIgnoreCase(command)) {
+                    writer.println("QUIT||");
+                    writer.flush();
+                    System.out.println("Sendt: QUIT||");
                     System.out.println("Klienten afslutter forbindelsen.");
                     break;
                 } else if ("ROOMS".equalsIgnoreCase(command)) {

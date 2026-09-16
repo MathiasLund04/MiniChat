@@ -19,6 +19,7 @@ public class ClientHandler implements Runnable {
     private final MessageParser messageParser = new MessageParser();
     private String username;
     private String currentRoom = "general";
+    private boolean running = true;
 
     public ClientHandler(Socket socket) throws IOException {
         this.socket = socket;
@@ -35,20 +36,24 @@ public class ClientHandler implements Runnable {
     public void run() {
         try {
             String rawMessage;
-            while ((rawMessage = reader.readLine()) != null) {
+            while (running && (rawMessage = reader.readLine()) != null) {
                 if (username == null) {
                     System.out.println("Modtaget fra klient: " + rawMessage);
                 } else {
                     System.out.println("Modtaget fra " + username + ": " + rawMessage);
                 }
-                handleMessage(messageParser.parse(rawMessage));
+                try {
+                    handleMessage(messageParser.parse(rawMessage));
+                } catch (IllegalArgumentException ex) {
+                    sendErrorMessage("", ex.getMessage());
+                }
             }
 
-            System.out.println("Klienten lukker forbindelsen.");
+            if (running) {
+                System.out.println("Klienten lukker forbindelsen.");
+            }
         } catch (IOException ex) {
             System.out.println("Fejl i ClientHandler: " + ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            sendErrorMessage("", ex.getMessage());
         } finally {
             close();
         }
@@ -82,6 +87,9 @@ public class ClientHandler implements Runnable {
                 break;
             case "PRIVATE":
                 handlePrivate(message);
+                break;
+            case "QUIT":
+                handleQuit();
                 break;
             default:
                 throw new IllegalArgumentException("Ukendt beskedtype: " + message.getType());
@@ -188,6 +196,11 @@ sendMessage(privateMessage);
 if (recipient != this) {
     recipient.sendMessage(privateMessage);
 }
+    }
+
+    private void handleQuit() {
+running = false;
+sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|QUIT|SERVER|" + (username == null ? "" : username) + "|Forbindelsen lukkes");
     }
 
     private void sendErrorMessage(String target, String payload) {
