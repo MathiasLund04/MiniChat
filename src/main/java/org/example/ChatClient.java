@@ -54,20 +54,13 @@ public class ChatClient {
                     writer.flush();
                     System.out.println("Sendt: ROOMS||");
                 } else if ("TEXT".equalsIgnoreCase(command)) {
-                    System.out.print("Rum (nuværende: " + currentRoom + "): ");
-                    if (!scanner.hasNextLine()) break;
-                    String room = scanner.nextLine().trim();
-                    if (room.isEmpty()) {
-                        room = currentRoom;
-                    }
-                    
-                    System.out.print("Besked: ");
+                    System.out.print("Besked (nuværende Rum: " + currentRoom + "): ");
                     if (!scanner.hasNextLine()) break;
                     String payload = scanner.nextLine();
                     
-                    writer.println("TEXT|" + room + "|" + payload);
+                    writer.println("TEXT|" + currentRoom + "|" + payload);
                     writer.flush();
-                    System.out.println("Sendt: TEXT|" + room + "|" + payload);
+                    System.out.println("Sendt: TEXT|" + currentRoom + "|" + payload);
                 } else if ("JOIN_ROOM".equalsIgnoreCase(command)) {
                     System.out.print("Rum navn: ");
                     if (!scanner.hasNextLine()) break;
