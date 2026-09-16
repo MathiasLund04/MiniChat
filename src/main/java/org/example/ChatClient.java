@@ -36,7 +36,7 @@ public class ChatClient {
             receiverThread.start();
 
             String currentRoom = "general";
-            System.out.println("\nKommandoer: TEXT, JOIN_ROOM, PRIVATE, QUIT");
+            System.out.println("\nKommandoer: ROOMS, TEXT, JOIN_ROOM, PRIVATE, QUIT");
                 System.out.print("Vælg kommando: ");
             while (true) {
                 if (!scanner.hasNextLine()) {
@@ -49,6 +49,10 @@ public class ChatClient {
                 if ("QUIT".equalsIgnoreCase(command)) {
                     System.out.println("Klienten afslutter forbindelsen.");
                     break;
+                } else if ("ROOMS".equalsIgnoreCase(command)) {
+                    writer.println("ROOMS||");
+                    writer.flush();
+                    System.out.println("Sendt: ROOMS||");
                 } else if ("TEXT".equalsIgnoreCase(command)) {
                     System.out.print("Rum (nuværende: " + currentRoom + "): ");
                     if (!scanner.hasNextLine()) break;
@@ -65,11 +69,6 @@ public class ChatClient {
                     writer.flush();
                     System.out.println("Sendt: TEXT|" + room + "|" + payload);
                 } else if ("JOIN_ROOM".equalsIgnoreCase(command)) {
-                    System.out.println("Liste over tilgængelige rum:");
-                    
-
-
-
                     System.out.print("Rum navn: ");
                     if (!scanner.hasNextLine()) break;
                     String room = scanner.nextLine().trim();
@@ -91,7 +90,7 @@ public class ChatClient {
                     writer.flush();
                     System.out.println("Sendt: PRIVATE|" + recipient + "|" + payload);
                 } else {
-                    System.out.println("Ukendt kommando. Prøv: TEXT, JOIN_ROOM, PRIVATE, QUIT");
+                    System.out.println("Ukendt kommando. Prøv: ROOMS, TEXT, JOIN_ROOM, PRIVATE, QUIT");
                 }
             }
         } catch (ConnectException exception) {

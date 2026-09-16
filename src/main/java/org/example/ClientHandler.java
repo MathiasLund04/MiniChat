@@ -71,6 +71,9 @@ public class ClientHandler implements Runnable {
             case "LOGIN":
                 handleLogin(message);
                 break;
+            case "ROOMS":
+                handleRooms();
+                break;
             case "JOIN_ROOM":
                 handleJoinRoom(message);
                 break;
@@ -112,19 +115,6 @@ public class ClientHandler implements Runnable {
             return;
         }
 
-        ConcurrentHashMap<String, Set<String>> rooms = CHAT_ROOM_MANAGER.getRooms();
-        System.out.println("Tilgængelige rum: ");
-        int roomAmount = rooms.size();
-        sendMessage(String.valueOf(roomAmount));
-
-        if (rooms.isEmpty()){
-            System.out.println("Ingen rum oprettet endnu");
-        } else {
-            for (String roomName : rooms.keySet()){
-                sendMessage(roomName); //WIP!!!
-            }
-        }
-
         String roomName = message.getTarget();
         if (roomName == null || roomName.isBlank()) {
             sendErrorMessage(username, "Rum mangler");
@@ -134,6 +124,22 @@ public class ClientHandler implements Runnable {
         CHAT_ROOM_MANAGER.joinRoom(username, roomName);
         currentRoom = roomName;
         sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|JOIN_ROOM|SERVER|" + roomName + "|Du er nu i rummet");
+    }
+
+    private void handleRooms() {
+        if (username == null) {
+            sendErrorMessage("", "Du skal logge ind først");
+            return;
+        }
+
+        ConcurrentHashMap<String, Set<String>> rooms = CHAT_ROOM_MANAGER.getRooms();
+        if (rooms.isEmpty()) {
+            sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|ROOMS|SERVER||Ingen rum oprettet endnu");
+            return;
+        }
+
+        String availableRooms = String.join(",", rooms.keySet());
+        sendMessage(CLIENT_REGISTRY.formatTimestamp() + "|ROOMS|SERVER||" + availableRooms);
     }
 
     private void handleText(Message message) {
