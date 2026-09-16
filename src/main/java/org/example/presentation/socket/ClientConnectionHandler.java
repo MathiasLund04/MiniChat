@@ -79,7 +79,7 @@ public class ClientConnectionHandler implements Runnable, ClientConnection {
     }
 
     @Override
-    public void sendMessage(String message) {
+    public synchronized void sendMessage(String message) {
         if (message == null) {
             return;
         }
