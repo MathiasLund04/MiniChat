@@ -39,7 +39,7 @@ public class ChatCommandDispatcher {
                 case QUIT:
                     return chatService.quit(session);
                 case ERROR:
-                    throw new IllegalArgumentException("ERROR er ikke en gyldig klientkommando.");
+return messageFormatter.formatError(message.getTarget(), message.getPayload());
                 default:
                     throw new IllegalArgumentException("Ukendt beskedtype: " + message.getType());
             }
