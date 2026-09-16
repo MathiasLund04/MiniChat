@@ -29,7 +29,6 @@ public class ClientConsoleController {
             }
 
             String currentRoom = "general";
-            startReceiverThread(client.getReader());
 
             while (!login(client, scanner)) {
                 if (!scanner.hasNextLine()) {
@@ -38,7 +37,9 @@ public class ClientConsoleController {
                 view.showLoginRetry();
             }
 
+            startReceiverThread(client.getReader());
             view.showCommands();
+            view.promptCommand();
 
             while (true) {
                 if (!scanner.hasNextLine()) {
@@ -107,8 +108,9 @@ public class ClientConsoleController {
         }
 
         String username = scanner.nextLine().trim();
-        client.send("LOGIN|" + username + "|");
-        return true;
+        String response = client.sendAndRead("LOGIN|" + username + "|");
+        view.showReceived(response);
+        return isLoginAccepted(response);
     }
 
     private void startReceiverThread(BufferedReader reader) {
@@ -127,5 +129,10 @@ public class ClientConsoleController {
         receiverThread.setDaemon(true);
         receiverThread.setName("chat-client-receiver");
         receiverThread.start();
+    }
+
+    private boolean isLoginAccepted(String response) {
+        String[] parts = response.split("\\|", 5);
+        return parts.length > 1 && "LOGIN".equals(parts[1]);
     }
 }
