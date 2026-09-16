@@ -26,6 +26,10 @@ public class AuthenticationService {
             return messageFormatter.formatError(requestedUsername, "Brugernavn er ikke tilladt");
         }
 
+if (session.isLoggedIn()) {
+            return messageFormatter.formatError(requestedUsername, "Du er allerede logget ind");
+        }
+
         if (!clientRepository.register(requestedUsername, connection)) {
             return messageFormatter.formatError(requestedUsername, "Brugernavn er allerede i brug");
         }
