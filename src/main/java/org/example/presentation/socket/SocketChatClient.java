@@ -21,14 +21,11 @@ public class SocketChatClient implements AutoCloseable {
     public String sendAndRead(String request) throws IOException {
         writer.println(request);
         writer.flush();
-        System.out.println(request);
 
         String response = reader.readLine();
         if (response == null) {
             throw new IOException("Serveren afbrød forbindelsen uden at sende et svar.");
         }
-
-        System.out.println("Svar: " + response);
         return response;
     }
 
