@@ -37,7 +37,8 @@ public class ClientConsoleController {
                 view.showLoginRetry();
             }
 
-            startReceiverThread(client.getReader());
+            Thread receiverThread = startReceiverThread(client.getReader());
+            boolean quitRequested = false;
             view.showCommands();
             view.promptCommand();
 
@@ -51,6 +52,7 @@ public class ClientConsoleController {
                 if ("QUIT".equals(command)) {
                     client.send("QUIT||");
                     view.showClientClosing();
+                    quitRequested = true;
                     break;
                 }
 
@@ -93,6 +95,10 @@ public class ClientConsoleController {
                 }
 
             }
+
+            if (quitRequested) {
+                awaitReceiverShutdown(receiverThread);
+            }
         } catch (ConnectException exception) {
             view.showConnectionError(port);
         } catch (IOException exception) {
@@ -113,7 +119,7 @@ public class ClientConsoleController {
         return isLoginAccepted(response);
     }
 
-    private void startReceiverThread(BufferedReader reader) {
+    private Thread startReceiverThread(BufferedReader reader) {
         Thread receiverThread = new Thread(() -> {
             try {
                 String response;
@@ -129,6 +135,16 @@ public class ClientConsoleController {
         receiverThread.setDaemon(true);
         receiverThread.setName("chat-client-receiver");
         receiverThread.start();
+        return receiverThread;
+    }
+
+    private void awaitReceiverShutdown(Thread receiverThread) {
+        try {
+            receiverThread.join();
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            view.showInterruptedShutdown();
+        }
     }
 
     private boolean isLoginAccepted(String response) {
