@@ -66,9 +66,13 @@ public class ChatClient {
                     if (!scanner.hasNextLine()) break;
                     String room = scanner.nextLine().trim();
                     
-                    writer.println("JOIN_ROOM|" + room + "|");
-                    writer.flush();
-                    currentRoom = room;
+if (room.isBlank()) {
+    System.out.println("Rumnavn mangler.");
+    continue;
+}
+writer.println("JOIN_ROOM|" + room + "|");
+writer.flush();
+currentRoom = room;
                     System.out.println("Sendt: JOIN_ROOM|" + room + "|");
                 } else if ("PRIVATE".equalsIgnoreCase(command)) {
                     System.out.print("Modtager: ");
