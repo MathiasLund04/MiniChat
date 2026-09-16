@@ -184,8 +184,10 @@ public class ClientHandler implements Runnable {
         }
 
         String privateMessage = CLIENT_REGISTRY.formatTimestamp() + "|PRIVATE|" + username + "|" + recipientName + "|" + message.getPayload();
-        sendMessage(privateMessage);
-        recipient.sendMessage(privateMessage);
+sendMessage(privateMessage);
+if (recipient != this) {
+    recipient.sendMessage(privateMessage);
+}
     }
 
     private void sendErrorMessage(String target, String payload) {
