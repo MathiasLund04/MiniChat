@@ -26,7 +26,13 @@ public class ClientConsoleController {
                 return;
             }
 
-            while (!login(client, scanner)) {
+while (true) {
+                if (login(client, scanner)) {
+                    break;
+                }
+                if (!scanner.hasNextLine()) {
+                    return;
+                }
                 view.showLoginRetry();
             }
 
