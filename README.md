@@ -18,6 +18,18 @@ Serveren bruger tråde i form af thread pool med ExecutorService. Dette program 
 Dette gør at serveren kan håndtere flere klienter på en gang uden at man manuelt skal oprette en enkelt ny tråd for hver klient.
 På den anden side bruger klienten også nogle tråde, en til at håndtere input fra brugeren og en anden tråd til at håndtere beskeder fra serverens side af. Dette gør klienten i stand til at modtage beskeder og samtidig vente på input fra brugeren.
 
+
+| Scenarie                                      | Forventet resultat                                 | Resultat|
+| --------------------------------------------- | -------------------------------------------------- | --------|
+| **Tre klienter forbindes samtidig**           | Alle klienter kan sende og modtage beskeder        | Bestået |
+| **To brugere vælger samme brugernavn**        | Den anden bruger afvises                           | Bestået |
+| **En bruger sender en besked i et rum**       | Kun brugere i det pågældende rum modtager beskeden | Bestået | 
+| **En bruger sender en privat besked**         | Kun den valgte modtager modtager beskeden          | Bestået |
+| **En klient sender en fejlformateret besked** | Serveren sender en fejl og fortsætter med at køre  | Bestået |
+| **En klient lukker uventet**                  | Brugeren fjernes fra serverens samlinger           | Bestået |
+| **Den valgte udvidelse anvendes**             | Udvidelsen fungerer som beskrevet                  | Ikke bestået|
+
+
 ### Delte ressourcer:
 ClientHandler-trådene skal kunne have adgang til fælles information om klienterne og chatrummene. Derfor bliver ClientRegistry(ClientRepository) og ChatRoomManager(RoomRepository) delt mellem alle ClientHandler i form af static.
 ClientRepository holder styr på de tilsluttede klienter mens RoomRepository holder styr på de eksisterende rum.
