@@ -25,6 +25,8 @@ Da der er flere ClientHandler-tråde der skal kunne tilgå disse ressourcer på 
 Beskrivelse af valgt udvidelse
 Vi havde tænkt at indsætte ”en udvidet oversigt over aktive brugere, chatrum og brugernes status ” da vi mente at det ville få vores program til bedre at ligne et chatprogram. Ved at kunne give en pænere oversigt over de forskellige rum og de brugere der befinder sig i selve programmet, ville det gøre det mere overskueligt at kunne sende en besked til en anden/et chatrum, ligesom med andre chat-platformer såsom discord, messenger og whatsapp.
 
+### AI-Dokumentation
+
 | Opgave        | AI-Værktøj | AI's Forslag | Jeres vurdering og ændringer | kontrol og test |
 | ------- |:-----------:| -----:| --- | --- |
 | Issue#3 – tilføj flere klienter	| copilot | Opdatere nuværende kode så det kan håndtere flere klienter på samme tid | Godkendt delvist. Dens forslag var godt men manglede en while lykke så man kunne skrive mere en 1 besked | Manuel kontrol og test af programmet |
@@ -33,14 +35,16 @@ Vi havde tænkt at indsætte ”en udvidet oversigt over aktive brugere, chatrum
 
 
 
-
+### Diagrammer
 
 
 Klassediagram
+
 Link til diagram: https://mermaid.ai/d/c917d5f7-2359-466c-8bb4-37254cf8054d 
 <img width="8192" height="4523" alt="MiniChat-KlasseDiagram" src="https://github.com/user-attachments/assets/ad461c2d-277c-4024-b7f6-15ee3c78a110" />
 
 Sekvensdiagram
+
 login:
  Link til diagram: https://mermaid.ai/d/fc939908-f29d-4b42-9ff8-d314c9ed413b 
 <img width="8055" height="6815" alt="MiniChat-Login" src="https://github.com/user-attachments/assets/c2bb0faf-c06a-49c6-ace1-5beb330216ba" />
