@@ -16,6 +16,11 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * SocketChatServer er en simpel chatserver, der accepterer klientforbindelser via sockets.
+ * Den håndterer klientforbindelser i separate tråde og bruger en dispatcher til at behandle beskeder.
+ */
+
 public class SocketChatServer {
     private final int port;
     private final ExecutorService executorService;
@@ -42,7 +47,6 @@ public class SocketChatServer {
         this.dispatcher = dispatcher;
         this.defaultRoom = defaultRoom;
     }
-
     public static SocketChatServer createDefault(int port, ExecutorService executorService) {
         ClientRepository clientRepository = new ClientRepository();
         RoomRepository roomRepository = new RoomRepository();
@@ -56,7 +60,10 @@ public class SocketChatServer {
         ChatCommandDispatcher dispatcher = new ChatCommandDispatcher(authenticationService, roomService, chatService, messageFormatter);
         return new SocketChatServer(port, executorService, clientRepository, roomRepository, messageParser, dispatcher, "general");
     }
-
+     /**
+     * Starter serveren og accepterer klientforbindelser.
+     * Hver klientforbindelse håndteres i en separat tråd.
+     */
     public void start() {
         System.out.println("Server startet");
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -84,6 +91,10 @@ public class SocketChatServer {
             shutdownExecutor();
         }
     }
+    /**
+     * Lukker ExecutorService korrekt, venter på afslutning af aktive tråde.
+     * Hvis trådene ikke afsluttes inden for 5 sekunder, forsøger den at lukke dem ned med shutdownNow().
+     */
 
     private void shutdownExecutor() {
         executorService.shutdown();

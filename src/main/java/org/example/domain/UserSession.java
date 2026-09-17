@@ -1,5 +1,8 @@
 package org.example.domain;
-
+/**
+ * Representerer en brugersession med et brugernavn og et aktuelt chatrum.
+ * Indeholder metoder til at få og sætte brugernavn og aktuelt rum.
+ */
 public class UserSession {
     private String username;
     private String currentRoom;

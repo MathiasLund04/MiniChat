@@ -1,5 +1,10 @@
 package org.example.domain;
 
+/**
+ * Representerer en besked med en type, et target og en payload(Beskeden).
+ * Denne klasse er uforanderlig (immutable) og trådsikker.
+ */
+
 public class Message {
     private final MessageType type;
     private final String target;

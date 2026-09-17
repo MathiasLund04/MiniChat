@@ -5,6 +5,11 @@ import org.example.domain.MessageType;
 import org.example.domain.UserSession;
 import org.example.infrastructure.MessageFormatter;
 
+/**
+ * Dispatcherklasse til at håndtere forskellige typer af chatbeskeder.
+ * Den modtager beskeder og sender dem videre til de relevante serviceklasser
+ * baseret på beskedtypen.
+ */
 public class ChatCommandDispatcher {
     private final AuthenticationService authenticationService;
     private final RoomService roomService;
@@ -23,6 +28,7 @@ public class ChatCommandDispatcher {
         this.messageFormatter = messageFormatter;
     }
 
+    // Metode til at afsende beskeder baseret på deres type
     public String dispatch(Message message, UserSession session, ClientConnection connection) {
         try {
             switch (message.getType()) {
@@ -48,4 +54,5 @@ return messageFormatter.formatError(message.getTarget(), message.getPayload());
             return messageFormatter.formatError(target, exception.getMessage());
         }
     }
+
 }

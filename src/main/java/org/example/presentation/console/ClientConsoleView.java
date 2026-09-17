@@ -1,5 +1,10 @@
 package org.example.presentation.console;
 
+/**
+ * ClientConsoleView er ansvarlig for at vise beskeder og prompts til brugeren i konsollen.
+ * Den håndterer visning af forbindelsesstatus, loginforsøg, kommandoer, inputprompts og fejlmeddelelser.
+ */
+
 public class ClientConsoleView {
     public void showConnectionAttempt(String host, int port) {
         System.out.println("Forbinder til " + host + ":" + port + "...");

@@ -6,6 +6,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ *  ClientRepository er en trådsikker klasse, der håndterer
+ *  registrering og afregistrering af klientforbindelser baseret på brugernavne.
+ */
+
 public class ClientRepository {
     private static final Set<String> ALLOWED_USERNAMES = Set.of("alice", "bob", "charlie");
 

@@ -1,4 +1,8 @@
 package org.example.domain;
+/**
+ * Enum for at repræsentere forskellige typer af beskeder i chatapplikationen.
+ * Indeholder metoder til at konvertere fra streng til enum type.
+ */
 
 public enum MessageType {
     LOGIN,

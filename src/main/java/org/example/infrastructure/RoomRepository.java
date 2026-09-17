@@ -7,6 +7,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+/**
+ * RoomRepository er en trådsikker klasse, der håndterer oprettelse, tilslutning og frakobling af chatrum.
+ * Den bruger ConcurrentHashMap til at gemme chatrum og deres medlemmer.
+ */
+
 
 public class RoomRepository {
     private final Map<String, ChatRoom> rooms = new ConcurrentHashMap<>();

@@ -7,6 +7,10 @@ import org.example.infrastructure.MessageFormatter;
 import org.example.infrastructure.RoomRepository;
 
 import java.util.stream.Collectors;
+/**
+ * Serviceklasse til håndtering af chatrum,
+ * herunder tilslutning til rum og visning af tilgængelige rum.
+ */
 
 public class RoomService {
     private final RoomRepository roomRepository;

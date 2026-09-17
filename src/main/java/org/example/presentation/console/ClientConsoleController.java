@@ -8,6 +8,11 @@ import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+/**
+ * ClientConsoleController håndterer brugerinteraktionen i konsollen.
+ * Den styrer login-processen, sender kommandoer til serveren og modtager svar.
+ */
+
 public class ClientConsoleController {
     private final ClientConsoleView view;
 
@@ -15,6 +20,7 @@ public class ClientConsoleController {
         this.view = view;
     }
 
+    // Starter klienten og håndterer brugerinteraktionen i konsollen.
     public void start(String host, int port, String[] args) {
         view.showConnectionAttempt(host, port);
 
@@ -106,6 +112,7 @@ public class ClientConsoleController {
         }
     }
 
+    // Metode til at håndtere login-processen. Den beder brugeren om et brugernavn og sender det til serveren.
     private boolean login(SocketChatClient client, Scanner scanner) throws IOException {
         view.promptUsername();
         if (!scanner.hasNextLine()) {
@@ -118,7 +125,7 @@ public class ClientConsoleController {
         view.showReceived(response);
         return isLoginAccepted(response);
     }
-
+    // Starter en tråd, der modtager beskeder fra serveren og viser dem i konsollen.
     private Thread startReceiverThread(BufferedReader reader) {
         Thread receiverThread = new Thread(() -> {
             try {
@@ -137,7 +144,7 @@ public class ClientConsoleController {
         receiverThread.start();
         return receiverThread;
     }
-
+    // Venter på, at modtagertråden afsluttes, når brugeren har anmodet om at afslutte klienten.
     private void awaitReceiverShutdown(Thread receiverThread) {
         try {
             receiverThread.join();
@@ -146,7 +153,7 @@ public class ClientConsoleController {
             view.showInterruptedShutdown();
         }
     }
-
+    // Tjekker, om login blev accepteret baseret på serverens svar.
     private boolean isLoginAccepted(String response) {
         String[] parts = response.split("\\|", 5);
         return parts.length > 1 && "LOGIN".equals(parts[1]);

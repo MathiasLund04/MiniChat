@@ -1,6 +1,10 @@
 package org.example.infrastructure;
 
 import org.example.domain.MessageType;
+/**
+ * Formatterer beskeder til en strengrepræsentation, der kan sendes over netværket.
+ * Indeholder metoder til at formatere beskeder med forskellige typer og afsendere.
+ */
 
 public class MessageFormatter {
     private static final String SERVER = "SERVER";

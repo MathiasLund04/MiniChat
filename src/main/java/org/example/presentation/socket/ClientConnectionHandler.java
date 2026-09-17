@@ -8,6 +8,7 @@ import org.example.domain.UserSession;
 import org.example.infrastructure.ClientRepository;
 import org.example.infrastructure.MessageParser;
 import org.example.infrastructure.RoomRepository;
+import org.example.infrastructure.TimestampProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +17,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+/**
+ * Håndterer en klientforbindelse i en separat tråd.
+ * Læser beskeder fra klienten, parser dem og sender dem videre til dispatcher.
+ * Sender også svar tilbage til klienten.
+ */
 
 public class ClientConnectionHandler implements Runnable, ClientConnection {
     private final Socket socket;
@@ -26,6 +32,7 @@ public class ClientConnectionHandler implements Runnable, ClientConnection {
     private final ClientRepository clientRepository;
     private final RoomRepository roomRepository;
     private final UserSession session;
+    private final TimestampProvider timestampProvider;
     private boolean running = true;
 
     public ClientConnectionHandler(
@@ -44,7 +51,13 @@ public class ClientConnectionHandler implements Runnable, ClientConnection {
         this.clientRepository = clientRepository;
         this.roomRepository = roomRepository;
         this.session = new UserSession(defaultRoom);
+        this.timestampProvider = new TimestampProvider();
     }
+    /**
+     * Kører i en separat tråd og håndterer kommunikationen med klienten.
+     * Læser beskeder fra klienten, parser dem og sender dem til dispatcher.
+     * Sender også svar tilbage til klienten.
+     */
 
     @Override
     public void run() {
@@ -78,24 +91,32 @@ public class ClientConnectionHandler implements Runnable, ClientConnection {
         }
     }
 
+    /**
+     * Sender en besked til klienten. Metoden er synkroniseret for at sikre trådsikkerhed.
+     */
     @Override
     public synchronized void sendMessage(String message) {
         if (message == null) {
             return;
         }
-
         writer.println(message);
         writer.flush();
     }
 
+    /**
+     * Logger indkommende beskeder fra klienten. Hvis brugeren ikke er logget ind, vises kun beskeden.
+     * Hvis brugeren er logget ind, vises også brugernavnet.
+     */
+
     private void logIncoming(String rawMessage) {
+        String timestamp = timestampProvider.now();
+
         if (session.getUsername() == null) {
-            System.out.println("Modtaget fra klient: " + rawMessage);
+            System.out.println(timestamp + " Modtaget fra klient: " + rawMessage);
         } else {
-            System.out.println("Modtaget fra " + session.getUsername() + ": " + rawMessage);
+            System.out.println(timestamp + " Modtaget fra " + session.getUsername() + ": " + rawMessage);
         }
     }
-
     public void close() {
         if (session.getUsername() != null) {
             roomRepository.leaveRoom(session.getUsername());

@@ -3,6 +3,11 @@ package org.example.infrastructure;
 import org.example.domain.Message;
 import org.example.domain.MessageType;
 
+/**
+ * Parserer beskeder fra en strengrepræsentation til en Message-objekt.
+ * Indeholder metoder til at parse beskeder med forskellige typer og formater.
+ */
+
 public class MessageParser {
     public Message parse(String message) {
         if (message == null || message.isBlank()) {

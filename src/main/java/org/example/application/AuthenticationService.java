@@ -6,6 +6,8 @@ import org.example.infrastructure.ClientRepository;
 import org.example.infrastructure.MessageFormatter;
 import org.example.infrastructure.RoomRepository;
 
+    // Serviceklasse til håndtering af autentificering og login af brugere
+
 public class AuthenticationService {
     private final ClientRepository clientRepository;
     private final RoomRepository roomRepository;
@@ -17,6 +19,7 @@ public class AuthenticationService {
         this.messageFormatter = messageFormatter;
     }
 
+    // Metode til at håndtere login af brugere
     public String login(String requestedUsername, UserSession session, ClientConnection connection) {
         if (requestedUsername == null || requestedUsername.isBlank()) {
             throw new IllegalArgumentException("Brugernavn mangler.");

@@ -6,6 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+/**
+ * SocketChatClient er en simpel klient, der kan oprette forbindelse til en chatserver via sockets.
+ * Den kan sende beskeder til serveren og modtage svar.
+ */
 
 public class SocketChatClient implements AutoCloseable {
     private final Socket socket;
