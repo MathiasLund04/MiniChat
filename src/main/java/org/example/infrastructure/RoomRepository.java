@@ -1,24 +1,22 @@
-package org.example;
+package org.example.infrastructure;
 
+import org.example.domain.ChatRoom;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ChatRoomManager {
-    private static final String DEFAULT_ROOM = "general";
-    private final Map<String, Set<String>> rooms = new ConcurrentHashMap<>();
-
-    public ChatRoomManager() {
-        createRoom(DEFAULT_ROOM);
-    }
+public class RoomRepository {
+    private final Map<String, ChatRoom> rooms = new ConcurrentHashMap<>();
 
     public void createRoom(String roomName) {
         if (roomName == null || roomName.isBlank()) {
             return;
         }
 
-        rooms.computeIfAbsent(roomName, ignored -> ConcurrentHashMap.newKeySet());
+        rooms.computeIfAbsent(roomName, ChatRoom::new);
     }
 
     public boolean joinRoom(String username, String roomName) {
@@ -27,10 +25,10 @@ public class ChatRoomManager {
         }
 
         createRoom(roomName);
-        for (Set<String> members : rooms.values()) {
-            members.remove(username);
+        for (ChatRoom room : rooms.values()) {
+            room.removeMember(username);
         }
-        rooms.get(roomName).add(username);
+        rooms.get(roomName).addMember(username);
         return true;
     }
 
@@ -39,8 +37,8 @@ public class ChatRoomManager {
             return;
         }
 
-        for (Set<String> members : rooms.values()) {
-            members.remove(username);
+        for (ChatRoom room : rooms.values()) {
+            room.removeMember(username);
         }
     }
 
@@ -49,22 +47,20 @@ public class ChatRoomManager {
             return false;
         }
 
-        return rooms.getOrDefault(roomName, Collections.emptySet()).contains(username);
+        ChatRoom room = rooms.get(roomName);
+        return room != null && room.hasMember(username);
     }
 
     public Set<String> getMembers(String roomName) {
-        if (roomName == null || roomName.isBlank()) {
+        ChatRoom room = rooms.get(roomName);
+        if (room == null) {
             return Collections.emptySet();
         }
 
-        return rooms.getOrDefault(roomName, Collections.emptySet());
+        return room.getMembers();
     }
 
-    public ConcurrentHashMap<String, Set<String>> getRooms() {
-        if (rooms == null){
-            return new ConcurrentHashMap<>();
-        }
-        return new ConcurrentHashMap<>(rooms);
+    public Collection<ChatRoom> getRooms() {
+        return Collections.unmodifiableCollection(rooms.values());
     }
-
 }

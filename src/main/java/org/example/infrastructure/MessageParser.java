@@ -1,4 +1,7 @@
-package org.example;
+package org.example.infrastructure;
+
+import org.example.domain.Message;
+import org.example.domain.MessageType;
 
 public class MessageParser {
     public Message parse(String message) {
@@ -11,13 +14,9 @@ public class MessageParser {
             throw new IllegalArgumentException("Ugyldigt beskedformat. Forventede TYPE|TARGET|PAYLOAD.");
         }
 
-        String type = fields[0].trim();
+        MessageType type = MessageType.from(fields[0]);
         String target = fields[1].trim();
         String payload = fields[2].trim();
-
-        if (type.isEmpty()) {
-            throw new IllegalArgumentException("Beskedtype mangler.");
-        }
 
         return new Message(type, target, payload);
     }

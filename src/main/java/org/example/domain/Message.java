@@ -1,17 +1,17 @@
-package org.example;
+package org.example.domain;
 
 public class Message {
-    private final String type;
+    private final MessageType type;
     private final String target;
     private final String payload;
 
-    public Message(String type, String target, String payload) {
+    public Message(MessageType type, String target, String payload) {
         this.type = type;
         this.target = target;
         this.payload = payload;
     }
 
-    public String getType() {
+    public MessageType getType() {
         return type;
     }
 
