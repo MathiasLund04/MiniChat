@@ -1,5 +1,5 @@
 ## Gruppe
-Gruppe 6, Null & Void: Mathias lund, Henriette larsen, Sofie Jørgensen, Oliver Ellegaard
+Gruppe 6, Null & Void: Mathias lund, Henriette Larsen, Sofie Jørgensen, Oliver Ellegaard
 
 ### Vejledning på start af server og klient
 For at starte chatprogrammet skal der bruges en server og en klient. Først skal der tjekkes at begge parter bruger den samme port for at forbinde til hinanden, derefter starter man først ServerApplication og derefter ClientApplication. 
