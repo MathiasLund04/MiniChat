@@ -25,6 +25,16 @@ Da der er flere ClientHandler-tråde der skal kunne tilgå disse ressourcer på 
 Beskrivelse af valgt udvidelse
 Vi havde tænkt at indsætte ”en udvidet oversigt over aktive brugere, chatrum og brugernes status ” da vi mente at det ville få vores program til bedre at ligne et chatprogram. Ved at kunne give en pænere oversigt over de forskellige rum og de brugere der befinder sig i selve programmet, ville det gøre det mere overskueligt at kunne sende en besked til en anden/et chatrum, ligesom med andre chat-platformer såsom discord, messenger og whatsapp.
 
+| Opgave        | AI-Værktøj | AI's Forslag | Jeres vurdering og ændringer | kontrol og test |
+| ------- |:-----------:| -----:| --- | --- |
+| Issue#3 – tilføj flere klienter	| copilot | Opdatere nuværende kode så det kan håndtere flere klienter på samme tid | Godkendt delvist. Dens forslag var godt men manglede en while lykke så man kunne skrive mere en 1 besked | Manuel kontrol og test af programmet |
+| Issue#5 -Tilføjelse af Chatrum og private beskeder      | Copilot      |  Udvide protokollen med Join_room/Private kommandoer. Implementere maneger til rummene, søge på bruger, diverse valideringer | Godkendt.  Implementerede alle kravne for issuet som det skulle uden nogle fejl | Copilot egen test, samt manuel kontrol og test |
+| Re-strukturering  | Copilot      |    Den kom med et forslag til en struktur der blander MVC, 3-lags modelen og clean architecture | Efter flere iterationer hvor vi ændrede kravne kom den frem til en struktur som vi godkendte og som ikke ødelage funktionaliteten af programmet | Copilot lavede en socket-smoke-test af funktunaliteten samt manuel kontrol og test|
+
+
+
+
+
 
 Klassediagram
 Link til diagram: https://mermaid.ai/d/c917d5f7-2359-466c-8bb4-37254cf8054d 
